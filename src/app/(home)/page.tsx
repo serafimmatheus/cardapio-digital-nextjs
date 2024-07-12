@@ -1,9 +1,24 @@
+'use client'
+
 import Image from 'next/image'
 import { StripperBanner } from './_components/striper-banner'
 import { CardProducts } from './_components/card-products'
-import { products } from '../api/mock'
+
+import { SelectCategory } from './_components/select-category'
+import { getAllProducts } from './action'
+import { useQuery } from '@tanstack/react-query'
+import { Divide } from 'lucide-react'
 
 export default function Home() {
+  const {
+    data: products,
+    isError,
+    isFetching,
+  } = useQuery({
+    queryKey: ['products'],
+    queryFn: getAllProducts,
+  })
+
   return (
     <main className='pb-20'>
       <div className='relative'>
@@ -47,13 +62,32 @@ export default function Home() {
       </div>
 
       <div className='max-w-7xl mx-auto w-full px-5 mt-9 space-y-16'>
-        <h2 className='text-2xl md:text-3xl font-bold'>Nossos cafés</h2>
+        <div className='flex items-center justify-between'>
+          <h2 className='text-2xl md:text-3xl font-bold'>Nossos cafés</h2>
+
+          <SelectCategory />
+        </div>
 
         <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 md:gap-x-10 gap-y-16'>
-          {products.map((product) => (
-            <CardProducts product={product} key={product.id} />
-          ))}
+          {isFetching
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <div
+                  key={index}
+                  className='bg-[#F3F2F2] animate-pulse h-[280px] flex flex-col justify-between min-h-full p-5 rounded-tl-lg rounded-br-lg rounded-tr-3xl rounded-bl-3xl'
+                />
+              ))
+            : products?.map((product) => (
+                <CardProducts product={product} key={product.id} />
+              ))}
         </div>
+
+        {isError && (
+          <div className='flex w-full h-[200px] justify-center items-center border border-destructive rounded-lg animate-pulse'>
+            <p className='text-xs text-destructive'>
+              Erro ao carregar produtos
+            </p>
+          </div>
+        )}
       </div>
     </main>
   )

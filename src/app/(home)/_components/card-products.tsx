@@ -1,19 +1,13 @@
 import Image from 'next/image'
+import { Product } from '../action'
 
 interface ProductIProps {
-  product: {
-    id: string
-    name: string
-    categories: string[]
-    description: string
-    price: number
-    image: string
-  }
+  product: Product
 }
 
 export function CardProducts({ product }: ProductIProps) {
   return (
-    <div className='bg-[#F3F2F2] flex flex-col justify-between min-h-full p-5 rounded-tl-lg rounded-br-lg rounded-tr-3xl rounded-bl-3xl'>
+    <div className='bg-card flex flex-col justify-between min-h-full p-5 rounded-tl-lg rounded-br-lg rounded-tr-3xl rounded-bl-3xl'>
       <div className='relative flex justify-center -top-12'>
         <Image
           src={product.image}
@@ -29,10 +23,10 @@ export function CardProducts({ product }: ProductIProps) {
         <div className='flex justify-center gap-2 flex-wrap'>
           {product.categories.map((category) => (
             <span
-              key={category}
-              className='bg-[#F1E9C9] text-[#C47F17] py-1 px-2 uppercase font-semibold text-[10px] rounded-full'
+              key={category.id}
+              className='bg-secondary text-secondary-foreground py-1 px-2 uppercase font-semibold text-[10px] rounded-full'
             >
-              {category}
+              {category.name}
             </span>
           ))}
         </div>
@@ -50,7 +44,7 @@ export function CardProducts({ product }: ProductIProps) {
               {new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
                 currency: 'BRL',
-              }).format(product.price)}
+              }).format(Number(product.price))}
             </span>
           </span>
         </div>

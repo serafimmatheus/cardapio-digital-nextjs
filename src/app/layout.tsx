@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import { Prompt } from 'next/font/google'
 import './globals.css'
 import { Header } from './_components/app/header'
+import { Toaster } from './_components/ui/toaster'
+import { ThemeProvider } from '@/app/_components/ui/theme-provider'
+import { Provider } from './_provider/query-client'
 
 const prompt = Prompt({
   weight: ['300', '400', '500', '600', '700'],
@@ -21,9 +24,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='pt-BR'>
-      <body className={prompt.className}>
-        <Header />
-        {children}
+      <body className={`${prompt.className}`}>
+        <Provider>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='light'
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Toaster />
+            <Header />
+            {children}
+          </ThemeProvider>
+        </Provider>
       </body>
     </html>
   )
