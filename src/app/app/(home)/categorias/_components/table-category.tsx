@@ -167,7 +167,7 @@ export function TableCategory() {
         </div>
       ) : (
         <div className='w-full'>
-          <div className='flex items-center py-4 justify-between'>
+          <div className='flex items-center py-4 justify-between gap-10'>
             <Input
               placeholder='Busque pelo nome...'
               value={
