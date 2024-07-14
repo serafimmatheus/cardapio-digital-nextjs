@@ -7,7 +7,6 @@ import { CardProducts } from './_components/card-products'
 import { SelectCategory } from './_components/select-category'
 import { getAllProducts } from './action'
 import { useQuery } from '@tanstack/react-query'
-import { Divide } from 'lucide-react'
 
 export default function Home() {
   const {

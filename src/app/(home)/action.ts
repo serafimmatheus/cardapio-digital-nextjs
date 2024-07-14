@@ -1,4 +1,5 @@
 import { api } from '../_lib/api'
+import nookies from 'nookies'
 
 export interface Product {
   id: string
@@ -22,7 +23,26 @@ export interface Category {
   updatedAt: string
 }
 
+interface User {
+  user: {
+    id: string
+    name: string
+    email: string
+    image: string
+    emailVerified: Date
+  }
+}
+
 export async function getAllProducts() {
   const response = await api.get<Product[]>('/products')
   return response.data
+}
+
+export async function getCurrentUser() {
+  const response = await api.get<User>('/profile')
+  return response.data
+}
+
+export async function logOut() {
+  nookies.destroy(null, '@token:coffee')
 }

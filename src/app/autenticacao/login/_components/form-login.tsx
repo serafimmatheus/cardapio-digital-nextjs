@@ -6,10 +6,13 @@ import { Input } from '@/app/_components/ui/input'
 import { Label } from '@/app/_components/ui/label'
 import { useToast } from '@/app/_components/ui/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { inviteCodeForEmail } from '../../_action/invite-code-for-email'
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Email inválido' }),
@@ -21,21 +24,33 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export function FormLogin() {
+  const route = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const { toast } = useToast()
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
   })
 
+  const { mutateAsync: inviteCodeForEmailFn, isPending } = useMutation({
+    mutationFn: inviteCodeForEmail,
+    onSuccess: async () => {
+      toast({
+        title: 'Email enviado',
+        description: 'Verifique seu email para continuar',
+      })
+
+      route.push('/autenticacao/verificar-codigo')
+    },
+    onError: (error) => {
+      toast({
+        title: 'Erro ao enviar email',
+        description: error.message,
+      })
+    },
+  })
+
   async function handleLogin(data: FormSchema) {
-    toast({
-      title: 'Você enviou os seguintes valores:',
-      description: (
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+    await inviteCodeForEmailFn(data)
   }
 
   return (
@@ -60,13 +75,13 @@ export function FormLogin() {
 
           <div className='absolute top-8 right-3'>
             {showPassword ? (
-              <EyeOff
+              <Eye
                 size={18}
                 onClick={() => setShowPassword(false)}
                 className='cursor-pointer'
               />
             ) : (
-              <Eye
+              <EyeOff
                 size={18}
                 onClick={() => setShowPassword(true)}
                 className='cursor-pointer'
@@ -83,7 +98,9 @@ export function FormLogin() {
       </div>
 
       <CardFooter className='p-0'>
-        <Button type='submit'>Entrar</Button>
+        <Button disabled={isPending} type='submit'>
+          Entrar
+        </Button>
       </CardFooter>
     </form>
   )

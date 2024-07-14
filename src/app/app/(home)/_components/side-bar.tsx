@@ -1,12 +1,24 @@
 'use client'
 
+import { logOut } from '@/app/(home)/action'
 import { Button } from '@/app/_components/ui/button'
-import { Home, Network, PackageOpen, Settings } from 'lucide-react'
+import { QueryClient, useMutation } from '@tanstack/react-query'
+import { Home, LogOut, Network, PackageOpen, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 function SideBarApp() {
   const pathName = usePathname()
+  const queriClient = new QueryClient()
+
+  const { mutateAsync: logOutFn } = useMutation({
+    mutationFn: logOut,
+    onSettled: async () => {
+      queriClient.invalidateQueries({
+        queryKey: ['current-user'],
+      })
+    },
+  })
 
   return (
     <aside className='px-4'>
@@ -69,6 +81,20 @@ function SideBarApp() {
             <Link href={'/app/configuracao'}>
               <Settings size={18} />
               <span>Configurações</span>
+            </Link>
+          </Button>
+        </li>
+
+        <li>
+          <Button
+            variant='destructive'
+            asChild
+            className={`w-full justify-start gap-2 items-center`}
+            onClick={() => logOutFn}
+          >
+            <Link href={'/'}>
+              <LogOut size={18} />
+              <span>Sair</span>
             </Link>
           </Button>
         </li>
