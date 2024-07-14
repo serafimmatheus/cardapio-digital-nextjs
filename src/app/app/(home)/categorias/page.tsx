@@ -5,14 +5,14 @@ import Link from 'next/link'
 
 function CategoriesPage() {
   return (
-    <div className='mx-auto w-full max-w-3xl px-5'>
+    <div className='mx-auto w-full max-w-3xl px-3 md:px-5'>
       <div className='flex items-center justify-between'>
         <h1 className='font-bold text-2xl'>Categorias</h1>
 
         <Button className='gap-2' asChild>
           <Link href={'/app/categorias/criar'}>
             <Plus size={18} />
-            Nova Categoria
+            <span className='hidden sm:block'>Nova Categoria</span>
           </Link>
         </Button>
       </div>

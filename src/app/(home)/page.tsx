@@ -30,8 +30,8 @@ export default function Home() {
           className='absolute w-full h-full object-cover select-none'
         />
 
-        <div className='w-full max-w-7xl mx-auto px-5 h-full pb-10'>
-          <div className='grid lg:grid-cols-2 grid-cols-1 pt-20'>
+        <div className='w-full max-w-7xl mx-auto px-3 sm:px-5 h-full pb-10'>
+          <div className='grid lg:grid-cols-2 grid-cols-1 pt-10 md:pt-20'>
             <div className='space-y-4'>
               <h2 className='text-3xl md:text-5xl font-bold'>
                 Encontre o café perfeito para qualquer hora do dia
@@ -60,14 +60,14 @@ export default function Home() {
         </div>
       </div>
 
-      <div className='max-w-7xl mx-auto w-full px-5 mt-9 space-y-16'>
-        <div className='flex items-center justify-between'>
+      <div className='max-w-7xl mx-auto w-full px-3 sm:px-5 mt-6 md:mt-9 space-y-16'>
+        <div className='flex flex-col sm:flex-row items-start gap-2 sm:gap-0 sm:items-center justify-between'>
           <h2 className='text-2xl md:text-3xl font-bold'>Nossos cafés</h2>
 
           <SelectCategory />
         </div>
 
-        <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 md:gap-x-10 gap-y-16'>
+        <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 md:gap-x-10 gap-y-16'>
           {isFetching
             ? Array.from({ length: 4 }).map((_, index) => (
                 <div

@@ -8,7 +8,7 @@ import { Home, LogOut, Network, PackageOpen, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-function SideBarApp() {
+function SideBarMobileApp() {
   const pathName = usePathname()
   const queriClient = new QueryClient()
 
@@ -31,10 +31,12 @@ function SideBarApp() {
               pathName === '/app' ? 'bg-primary' : 'bg-primary/70'
             } `}
           >
-            <Link href={'/app'}>
-              <Home size={18} />
-              <span>Inicio</span>
-            </Link>
+            <SheetClose asChild>
+              <Link href={'/app'}>
+                <Home size={18} />
+                <span>Inicio</span>
+              </Link>
+            </SheetClose>
           </Button>
         </li>
 
@@ -47,10 +49,12 @@ function SideBarApp() {
                 : 'bg-primary/70'
             } `}
           >
-            <Link href={'/app/categorias'}>
-              <Network size={18} />
-              <span>Categoria</span>
-            </Link>
+            <SheetClose asChild>
+              <Link href={'/app/categorias'}>
+                <Network size={18} />
+                <span>Categoria</span>
+              </Link>
+            </SheetClose>
           </Button>
         </li>
 
@@ -63,10 +67,12 @@ function SideBarApp() {
                 : 'bg-primary/70'
             } `}
           >
-            <Link href={'/app/produtos'}>
-              <PackageOpen size={18} />
-              <span>Produtos</span>
-            </Link>
+            <SheetClose asChild>
+              <Link href={'/app/produtos'}>
+                <PackageOpen size={18} />
+                <span>Produtos</span>
+              </Link>
+            </SheetClose>
           </Button>
         </li>
 
@@ -79,10 +85,12 @@ function SideBarApp() {
                 : 'bg-primary/70'
             } `}
           >
-            <Link href={'/app/configuracao'}>
-              <Settings size={18} />
-              <span className='truncate'>Configurações</span>
-            </Link>
+            <SheetClose asChild>
+              <Link href={'/app/configuracao'}>
+                <Settings size={18} />
+                <span className='truncate'>Configurações</span>
+              </Link>
+            </SheetClose>
           </Button>
         </li>
 
@@ -93,10 +101,12 @@ function SideBarApp() {
             className={`w-full justify-start gap-2 items-center`}
             onClick={() => logOutFn}
           >
-            <Link href={'/'}>
-              <LogOut size={18} />
-              <span>Sair</span>
-            </Link>
+            <SheetClose asChild>
+              <Link href={'/'}>
+                <LogOut size={18} />
+                <span>Sair</span>
+              </Link>
+            </SheetClose>
           </Button>
         </li>
       </ul>
@@ -104,4 +114,4 @@ function SideBarApp() {
   )
 }
 
-export default SideBarApp
+export default SideBarMobileApp
