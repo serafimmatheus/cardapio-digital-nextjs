@@ -26,7 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/app/_components/ui/table'
-import { QueryClient, useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getAllProducts, Product } from '@/app/(home)/action'
 import Image from 'next/image'
 import { Edit, Trash } from 'lucide-react'
@@ -35,7 +35,7 @@ import { deleteProducts } from '../_actions/delete-product'
 import { useToast } from '@/app/_components/ui/use-toast'
 
 export function TableProducts() {
-  const queryClient = new QueryClient()
+  const queryClient = useQueryClient()
   const { toast } = useToast()
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

@@ -9,11 +9,19 @@ export function middleware(request: NextRequest) {
   }
 
   if (pathName === '/autenticacao/login' && cookies?.value) {
-    return NextResponse.redirect(new URL('/app', request.url))
+    return NextResponse.redirect(new URL('/app/produtos', request.url))
+  }
+
+  if (pathName === '/app/produtos' && !cookies?.value) {
+    return NextResponse.redirect(new URL('/', request.url))
   }
 
   if (pathName === '/app' && !cookies?.value) {
-    return NextResponse.redirect(new URL('/autenticacao/login', request.url))
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  if (pathName === '/app' && cookies?.value) {
+    return NextResponse.redirect(new URL('/app/produtos', request.url))
   }
 }
 

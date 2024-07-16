@@ -17,6 +17,10 @@ import { useToast } from '@/app/_components/ui/use-toast'
 import { Button } from '@/app/_components/ui/button'
 
 import { Search } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { getCategories } from '@/app/app/(home)/categorias/_actions/get-categories'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useCallback } from 'react'
 
 const formSchema = z.object({
   category: z.string(),
@@ -25,53 +29,90 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export function SelectCategory() {
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set(name, value)
+
+      return params.toString()
+    },
+    [searchParams]
+  )
+
   const { toast } = useToast()
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
   })
 
+  const {
+    data: categories,
+    isError: isErrorCategories,
+    isFetching: isFetchingCategories,
+  } = useQuery({
+    queryKey: ['categories'],
+    queryFn: getCategories,
+  })
+
   function onSubmit(data: FormSchema) {
-    console.log(data)
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+    if (data.category === 'all') {
+      return router.push(`${pathname.toString()}`)
+    }
+
+    return router.push(
+      `${pathname.toString()}?${createQueryString('category', data.category)}`
+    )
   }
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
       className='flex items-center gap-2'
     >
-      <Controller
-        control={form.control}
-        name='category'
-        render={({ field }) => (
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
-            <SelectTrigger className='w-[180px]'>
-              <SelectValue placeholder='Categoria' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
+      {isFetchingCategories ? (
+        <p>Carregando...</p>
+      ) : (
+        <>
+          {' '}
+          <Controller
+            control={form.control}
+            name='category'
+            render={({ field }) => (
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={
+                  searchParams.get('category')
+                    ? searchParams.get('category')!
+                    : field.value
+                }
+              >
+                <SelectTrigger className='w-[180px]'>
+                  <SelectValue placeholder='Categoria' />
+                </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value='tradicional'>Tradicional</SelectItem>
-                  <SelectItem value='gelado'>Gelado</SelectItem>
-                  <SelectItem value='com-leite'>Com Leite</SelectItem>
-                  <SelectItem value='especial'>Especial</SelectItem>
-                  <SelectItem value='alcoolico'>ALCOÓLICO</SelectItem>
+                  <SelectGroup>
+                    <SelectContent>
+                      <SelectItem value={'all'}>Todos</SelectItem>
+                      {categories?.map((category) => (
+                        <SelectItem key={category.id} value={category.slug}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectGroup>
                 </SelectContent>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        )}
-      />
+              </Select>
+            )}
+          />
+          <Button size='icon' type='submit'>
+            <Search />
+          </Button>
+        </>
+      )}
 
-      <Button size='icon' type='submit'>
-        <Search />
-      </Button>
+      {isErrorCategories && <p>Erro ao carregar categorias</p>}
     </form>
   )
 }

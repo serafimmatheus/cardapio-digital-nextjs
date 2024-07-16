@@ -1,20 +1,36 @@
 'use client'
 
-import { logOut } from '@/app/(home)/action'
 import { Button } from '@/app/_components/ui/button'
-import { SheetClose } from '@/app/_components/ui/sheet'
-import { QueryClient, useMutation } from '@tanstack/react-query'
-import { Home, LogOut, Network, PackageOpen, Settings } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { LogOut, Network, PackageOpen, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import nookies from 'nookies'
 
 function SideBarApp() {
   const pathName = usePathname()
-  const queriClient = new QueryClient()
+  const queriClient = useQueryClient()
 
   const { mutateAsync: logOutFn } = useMutation({
-    mutationFn: logOut,
+    mutationFn: async () => {
+      nookies.destroy(null, '@token:coffee')
+    },
+    onMutate: async () => {
+      queriClient.cancelQueries({
+        queryKey: ['current-user'],
+      })
+      nookies.destroy(null, '@token:coffee')
+
+      const previousProducts = queriClient.getQueryData(['current-user'])
+
+      queriClient.setQueryData(['current-user'], (old: any) => {
+        return null
+      })
+
+      return { previousProducts }
+    },
     onSettled: async () => {
+      nookies.destroy(null, '@token:coffee')
       queriClient.invalidateQueries({
         queryKey: ['current-user'],
       })
@@ -24,7 +40,7 @@ function SideBarApp() {
   return (
     <aside className='px-4'>
       <ul className='space-y-4'>
-        <li>
+        {/* <li>
           <Button
             asChild
             className={`w-full justify-start gap-2 items-center ${
@@ -34,6 +50,22 @@ function SideBarApp() {
             <Link href={'/app'}>
               <Home size={18} />
               <span>Inicio</span>
+            </Link>
+          </Button>
+        </li> */}
+
+        <li>
+          <Button
+            asChild
+            className={`w-full justify-start gap-2 items-center ${
+              pathName.includes('/app/produtos')
+                ? 'bg-primary'
+                : 'bg-primary/70'
+            } `}
+          >
+            <Link href={'/app/produtos'}>
+              <PackageOpen size={18} />
+              <span>Produtos</span>
             </Link>
           </Button>
         </li>
@@ -50,22 +82,6 @@ function SideBarApp() {
             <Link href={'/app/categorias'}>
               <Network size={18} />
               <span>Categoria</span>
-            </Link>
-          </Button>
-        </li>
-
-        <li>
-          <Button
-            asChild
-            className={`w-full justify-start gap-2 items-center ${
-              pathName.includes('/app/produtos')
-                ? 'bg-primary'
-                : 'bg-primary/70'
-            } `}
-          >
-            <Link href={'/app/produtos'}>
-              <PackageOpen size={18} />
-              <span>Produtos</span>
             </Link>
           </Button>
         </li>
@@ -91,7 +107,10 @@ function SideBarApp() {
             variant='destructive'
             asChild
             className={`w-full justify-start gap-2 items-center`}
-            onClick={() => logOutFn}
+            onClick={() => {
+              nookies.destroy(null, '@token:coffee')
+              logOutFn()
+            }}
           >
             <Link href={'/'}>
               <LogOut size={18} />

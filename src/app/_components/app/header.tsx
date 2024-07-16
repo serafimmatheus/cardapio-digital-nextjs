@@ -9,18 +9,8 @@ import { getCurrentUser } from '@/app/(home)/action'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import nookies from 'nookies'
 import { useRouter } from 'next/navigation'
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '../ui/sheet'
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
 import { Button } from '../ui/button'
-import SideBarApp from '@/app/app/(home)/_components/side-bar'
 import { Menu } from 'lucide-react'
 import SideBarMobileApp from '@/app/app/(home)/_components/side-bar-mobile'
 
@@ -56,17 +46,17 @@ export function Header() {
                 <div className='flex gap-1'>
                   <Avatar>
                     <AvatarImage src={currentUser.user.image} alt='@shadcn' />
-                    <AvatarFallback>
+                    <AvatarFallback className='uppercase'>
                       {currentUser.user.name[0]}
-                      {currentUser.user.name.split(' ')[1][0]}
+                      {currentUser.user.name[1]}
                     </AvatarFallback>
                   </Avatar>
 
                   <div className='flex flex-col w-32 truncate'>
-                    <span className='text-sm font-bold truncate text-muted-foreground'>
+                    <span className='text-sm font-bold truncate text-muted-foreground capitalize'>
                       {currentUser.user.name}
                     </span>
-                    <span className='text-sm font-bold truncate text-muted-foreground'>
+                    <span className='text-sm font-bold truncate text-muted-foreground lowercase'>
                       {currentUser.user.email}
                     </span>
                   </div>
@@ -84,7 +74,7 @@ export function Header() {
                   <AvatarImage src={currentUser.user.image} alt='@shadcn' />
                   <AvatarFallback>
                     {currentUser.user.name[0]}
-                    {currentUser.user.name.split(' ')[1][0]}
+                    {currentUser.user.name[1]}
                   </AvatarFallback>
                 </Avatar>
               </Link>

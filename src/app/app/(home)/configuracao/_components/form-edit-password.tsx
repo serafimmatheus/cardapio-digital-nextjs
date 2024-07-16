@@ -6,10 +6,12 @@ import { Input } from '@/app/_components/ui/input'
 import { Label } from '@/app/_components/ui/label'
 import { useToast } from '@/app/_components/ui/use-toast'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { updateProfilePassword } from '../_active/update-profile-password'
 
 const schemaEditProfile = z.object({
   oldPassword: z.string(),
@@ -19,25 +21,58 @@ const schemaEditProfile = z.object({
 type FormEditProfileType = z.infer<typeof schemaEditProfile>
 
 export function FormEditPassword() {
+  const queryClient = useQueryClient()
   const { toast } = useToast()
   const [showNewPassword, setShowNewPassword] = useState(false)
   const [showOldPassword, setShowOldPassword] = useState(false)
 
-  const { register, handleSubmit } = useForm<FormEditProfileType>({
+  const { register, handleSubmit, reset } = useForm<FormEditProfileType>({
     resolver: zodResolver(schemaEditProfile),
   })
 
-  async function onSubmit(data: FormEditProfileType) {
-    console.log(data)
+  const { mutateAsync: updateProfilePasswordFn, isPending } = useMutation({
+    mutationFn: updateProfilePassword,
+    onMutate: async (updateProfile) => {
+      await queryClient.cancelQueries({
+        queryKey: ['current-user'],
+      })
 
-    toast({
-      title: 'Perfil atualizado',
-      description: (
-        <pre>
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+      const previousProducts = queryClient.getQueryData(['current-user'])
+
+      queryClient.setQueryData(['current-user'], (old: any) => {
+        return {
+          ...old,
+          ...updateProfile,
+        }
+      })
+
+      return { previousProducts }
+    },
+
+    onError: (error) => {
+      toast({
+        title: 'Erro ao atualizar senha',
+        description: error.message,
+      })
+    },
+
+    onSuccess: () => {
+      toast({
+        title: 'Senha atualizada',
+        description: 'Sua senha foi atualizada com sucesso',
+      })
+      reset()
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['current-user'],
+      })
+    },
+  })
+
+  async function onSubmit(data: FormEditProfileType) {
+    await updateProfilePasswordFn(data)
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -90,7 +125,9 @@ export function FormEditPassword() {
       </div>
 
       <CardFooter className='pt-6 px-0'>
-        <Button type='submit'>Salvar</Button>
+        <Button disabled={isPending} type='submit'>
+          Salvar
+        </Button>
       </CardFooter>
     </form>
   )

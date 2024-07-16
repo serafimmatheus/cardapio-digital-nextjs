@@ -13,6 +13,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { inviteCodeForEmail } from '../../_action/invite-code-for-email'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Email inválido' }),
@@ -88,6 +89,13 @@ export function FormLogin() {
               />
             )}
           </div>
+
+          <Link
+            className='flex mt-3 text-xs font-semibold'
+            href={'/autenticacao/verificar-codigo'}
+          >
+            verificar codigo
+          </Link>
 
           {form.formState.errors.password && (
             <p className='text-red-500 text-xs'>

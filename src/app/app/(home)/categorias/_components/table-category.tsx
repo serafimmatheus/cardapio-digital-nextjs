@@ -27,7 +27,7 @@ import {
   TableRow,
 } from '@/app/_components/ui/table'
 import { Edit, Trash } from 'lucide-react'
-import { QueryClient, useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Category, getCategories } from '../_actions/get-categories'
 import Link from 'next/link'
 import { deleteCategories } from '../_actions/delete-category'
@@ -51,7 +51,7 @@ export function TableCategory() {
     queryFn: getCategories,
   })
 
-  const queryClient = new QueryClient()
+  const queryClient = useQueryClient()
 
   const { toast } = useToast()
 

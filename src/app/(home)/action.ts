@@ -44,5 +44,5 @@ export async function getCurrentUser() {
 }
 
 export async function logOut() {
-  nookies.destroy(null, '@token:coffee')
+  await nookies.destroy(null, '@token:coffee')
 }
