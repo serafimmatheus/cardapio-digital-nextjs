@@ -4,7 +4,7 @@ export interface Product {
   name: string
   slug: string
   description?: string | null
-  price: string
+  price: number
   image?: string | null
   isActive?: boolean
   categories: string[]

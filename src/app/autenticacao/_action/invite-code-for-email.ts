@@ -9,6 +9,6 @@ export async function inviteCodeForEmail({
   email,
   password,
 }: InviteCodeForEmail) {
-  const response = await api.post('/session', { email, password })
+  const response = await api.post('/auth/login', { email, password })
   return response.data
 }

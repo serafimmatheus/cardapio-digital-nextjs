@@ -4,8 +4,8 @@ import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 import { DarkTheme } from '../ui/dark-theme'
 import Link from 'next/link'
-import { useQuery } from '@tanstack/react-query'
-import { getCurrentUser } from '@/app/(home)/action'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { getCurrentUser, User } from '@/app/(home)/action'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import nookies from 'nookies'
 import { useRouter } from 'next/navigation'
@@ -13,18 +13,30 @@ import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet'
 import { Button } from '../ui/button'
 import { Menu } from 'lucide-react'
 import SideBarMobileApp from '@/app/app/(home)/_components/side-bar-mobile'
+import { useEffect, useState } from 'react'
 
 export function Header() {
+  const [currentUser, setCurrentUser] = useState<User>()
   const router = useRouter()
-  const { data: currentUser, isError } = useQuery({
-    queryKey: ['current-user'],
-    queryFn: getCurrentUser,
+  const { mutateAsync: getCurrentUserFn, isError } = useMutation({
+    mutationFn: getCurrentUser,
+    onError: async () => {
+      nookies.destroy(null, '@token:coffee')
+      return router.push('/autenticacao/login')
+    },
+    onSuccess: (data) => {
+      setCurrentUser(data)
+    },
   })
 
   if (isError) {
     nookies.destroy(null, '@token:coffee')
     router.push('/autenticacao/login')
   }
+
+  useEffect(() => {
+    getCurrentUserFn()
+  }, [getCurrentUserFn])
 
   return (
     <header>
@@ -45,10 +57,10 @@ export function Header() {
               <Link href={'/app'}>
                 <div className='flex gap-1'>
                   <Avatar>
-                    <AvatarImage src={currentUser.user.image} alt='@shadcn' />
+                    <AvatarImage src={currentUser.user.image!} alt='@shadcn' />
                     <AvatarFallback className='uppercase'>
-                      {currentUser.user.name[0]}
-                      {currentUser.user.name[1]}
+                      {currentUser.user.name![0]}
+                      {currentUser.user.name![1]}
                     </AvatarFallback>
                   </Avatar>
 
@@ -71,10 +83,10 @@ export function Header() {
             <div className='md:hidden flex items-center gap-2'>
               <Link href={'/app'}>
                 <Avatar>
-                  <AvatarImage src={currentUser.user.image} alt='@shadcn' />
+                  <AvatarImage src={currentUser.user.image!} alt='@shadcn' />
                   <AvatarFallback>
-                    {currentUser.user.name[0]}
-                    {currentUser.user.name[1]}
+                    {currentUser.user.name![0]}
+                    {currentUser.user.name![1]}
                   </AvatarFallback>
                 </Avatar>
               </Link>

@@ -69,7 +69,11 @@ export function FormEditProfile() {
   })
 
   async function onSubmit(data: FormEditProfileType) {
-    updateProfileFn(data)
+    const newData = {
+      ...data,
+      id: currentUser?.user.id,
+    }
+    updateProfileFn(newData)
   }
 
   return (

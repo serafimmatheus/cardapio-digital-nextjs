@@ -1,5 +1,6 @@
 'use client'
 
+import { logOut } from '@/app/(home)/action'
 import { Button } from '@/app/_components/ui/button'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { LogOut, Network, PackageOpen, Settings } from 'lucide-react'
@@ -12,14 +13,11 @@ function SideBarApp() {
   const queriClient = useQueryClient()
 
   const { mutateAsync: logOutFn } = useMutation({
-    mutationFn: async () => {
-      nookies.destroy(null, '@token:coffee')
-    },
+    mutationFn: logOut,
     onMutate: async () => {
       queriClient.cancelQueries({
         queryKey: ['current-user'],
       })
-      nookies.destroy(null, '@token:coffee')
 
       const previousProducts = queriClient.getQueryData(['current-user'])
 
@@ -30,7 +28,6 @@ function SideBarApp() {
       return { previousProducts }
     },
     onSettled: async () => {
-      nookies.destroy(null, '@token:coffee')
       queriClient.invalidateQueries({
         queryKey: ['current-user'],
       })
@@ -107,10 +104,7 @@ function SideBarApp() {
             variant='destructive'
             asChild
             className={`w-full justify-start gap-2 items-center`}
-            onClick={() => {
-              nookies.destroy(null, '@token:coffee')
-              logOutFn()
-            }}
+            onClick={() => logOutFn()}
           >
             <Link href={'/'}>
               <LogOut size={18} />

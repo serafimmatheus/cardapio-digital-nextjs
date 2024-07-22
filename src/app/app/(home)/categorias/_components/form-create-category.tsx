@@ -41,6 +41,8 @@ function FormCreateCategory() {
         title: 'Categoria criada com sucesso',
         description: 'success',
       })
+
+      router.push('/app/categorias')
     },
   })
 

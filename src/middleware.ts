@@ -12,7 +12,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/app/produtos', request.url))
   }
 
-  if (pathName === '/app/produtos' && !cookies?.value) {
+  if (pathName.includes('/app') && !cookies?.value) {
     return NextResponse.redirect(new URL('/', request.url))
   }
 

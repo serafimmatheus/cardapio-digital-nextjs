@@ -16,7 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useToast } from '@/app/_components/ui/use-toast'
 
 const schemaLoginCode = z.object({
-  code: z.string().length(4, { message: 'Código inválido' }),
+  code: z.string().length(6, { message: 'Código inválido' }),
 })
 
 type LoginCode = z.infer<typeof schemaLoginCode>
@@ -66,12 +66,14 @@ export function FormVerifyCode() {
         control={control}
         name='code'
         render={({ field }) => (
-          <InputOTP maxLength={4} {...field}>
+          <InputOTP maxLength={6} {...field}>
             <InputOTPGroup>
               <InputOTPSlot index={0} />
               <InputOTPSlot index={1} />
               <InputOTPSlot index={2} />
               <InputOTPSlot index={3} />
+              <InputOTPSlot index={4} />
+              <InputOTPSlot index={5} />
             </InputOTPGroup>
           </InputOTP>
         )}

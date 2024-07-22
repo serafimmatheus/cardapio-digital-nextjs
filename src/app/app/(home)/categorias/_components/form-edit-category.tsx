@@ -49,6 +49,8 @@ export function FormEditCategory({ slug }: { slug: string }) {
         title: 'Categoria criada com sucesso',
         description: 'success',
       })
+
+      router.push('/app/categorias')
     },
   })
 

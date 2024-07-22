@@ -101,6 +101,14 @@ export default function Home() {
             </p>
           </div>
         )}
+
+        {filteredProducts?.length === 0 && (
+          <div className='flex w-full h-[200px] justify-center items-center border border-destructive rounded-lg animate-pulse'>
+            <p className='text-xs text-destructive'>
+              Nenhum produto encontrado
+            </p>
+          </div>
+        )}
       </div>
     </main>
   )

@@ -23,13 +23,15 @@ export interface Category {
   updatedAt: string
 }
 
-interface User {
+export interface User {
   user: {
     id: string
-    name: string
-    email: string
-    image: string
-    emailVerified: Date
+    name: string | null
+    email: string | null
+    emailVerified: Date | null
+    image: string | null
+    createdAt: Date
+    updatedAt: Date
   }
 }
 
@@ -39,10 +41,26 @@ export async function getAllProducts() {
 }
 
 export async function getCurrentUser() {
-  const response = await api.get<User>('/profile')
+  const token = nookies.get(null, '@token:coffee')
+
+  const response = await api.post('/auth/session', {
+    token: `${token['@token:coffee']}`,
+  })
   return response.data
 }
 
 export async function logOut() {
-  await nookies.destroy(null, '@token:coffee')
+  const token = nookies.get(null, '@token:coffee')
+
+  const response = await api.post('/auth/logout', {
+    token: `${token['@token:coffee']}`,
+  })
+
+  nookies.destroy(null, '@token:coffee')
+  return response.data
+}
+
+export async function getSession() {
+  const response = await api.post<User>('/auth/session')
+  return response.data
 }

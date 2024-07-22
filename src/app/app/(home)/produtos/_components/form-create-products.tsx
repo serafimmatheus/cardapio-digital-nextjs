@@ -20,10 +20,9 @@ const schemaCreateProduct = z.object({
   name: z.string(),
   slug: z.string(),
   description: z.string().nullish(),
-  price: z.string(),
+  price: z.coerce.number(),
   image: z.string().nullish(),
   isActive: z.boolean().default(true),
-  // categories: z.array(z.string()),
   categories: z.array(z.string()).refine((name) => name.some((item) => item)),
 })
 

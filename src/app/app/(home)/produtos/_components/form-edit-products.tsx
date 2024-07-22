@@ -58,6 +58,7 @@ export function FormEditProducts({ slug }: { slug: string }) {
         title: 'Produto criado com sucesso',
         description: 'success',
       })
+      router.push('/app/produtos')
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] })
