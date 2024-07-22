@@ -14,6 +14,19 @@ function SideBarMobileApp() {
 
   const { mutateAsync: logOutFn } = useMutation({
     mutationFn: logOut,
+    onMutate: async () => {
+      queriClient.cancelQueries({
+        queryKey: ['current-user'],
+      })
+
+      const previousProducts = queriClient.getQueryData(['current-user'])
+
+      queriClient.setQueryData(['current-user'], (old: any) => {
+        return null
+      })
+
+      return { previousProducts }
+    },
     onSettled: async () => {
       queriClient.invalidateQueries({
         queryKey: ['current-user'],
