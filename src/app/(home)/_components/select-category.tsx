@@ -14,7 +14,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button } from '@/app/_components/ui/button'
-
+import { Suspense } from 'react'
 import { Search } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { getCategories } from '@/app/app/(home)/categorias/_actions/get-categories'
@@ -72,8 +72,7 @@ export function SelectCategory() {
       {isFetchingCategories ? (
         <p>Carregando...</p>
       ) : (
-        <>
-          {' '}
+        <Suspense>
           <Controller
             control={form.control}
             name='category'
@@ -107,7 +106,7 @@ export function SelectCategory() {
           <Button size='icon' type='submit'>
             <Search />
           </Button>
-        </>
+        </Suspense>
       )}
 
       {isErrorCategories && <p>Erro ao carregar categorias</p>}

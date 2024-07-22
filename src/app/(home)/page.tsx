@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { StripperBanner } from './_components/striper-banner'
 import { CardProducts } from './_components/card-products'
-
+import { Suspense } from 'react'
 import { SelectCategory } from './_components/select-category'
 import { getAllProducts } from './action'
 import { useQuery } from '@tanstack/react-query'
@@ -81,18 +81,20 @@ export default function Home() {
           <SelectCategory />
         </div>
 
-        <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 md:gap-x-10 gap-y-16'>
-          {isFetching
-            ? Array.from({ length: 4 }).map((_, index) => (
-                <div
-                  key={index}
-                  className='bg-[#F3F2F2] animate-pulse h-[280px] flex flex-col justify-between min-h-full p-5 rounded-tl-lg rounded-br-lg rounded-tr-3xl rounded-bl-3xl'
-                />
-              ))
-            : filteredProducts?.map((product) => (
-                <CardProducts product={product} key={product.id} />
-              ))}
-        </div>
+        <Suspense>
+          <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-x-6 md:gap-x-10 gap-y-16'>
+            {isFetching
+              ? Array.from({ length: 4 }).map((_, index) => (
+                  <div
+                    key={index}
+                    className='bg-[#F3F2F2] animate-pulse h-[280px] flex flex-col justify-between min-h-full p-5 rounded-tl-lg rounded-br-lg rounded-tr-3xl rounded-bl-3xl'
+                  />
+                ))
+              : filteredProducts?.map((product) => (
+                  <CardProducts product={product} key={product.id} />
+                ))}
+          </div>
+        </Suspense>
 
         {isError && (
           <div className='flex w-full h-[200px] justify-center items-center border border-destructive rounded-lg animate-pulse'>
@@ -102,13 +104,15 @@ export default function Home() {
           </div>
         )}
 
-        {filteredProducts?.length === 0 && (
-          <div className='flex w-full h-[200px] justify-center items-center border border-destructive rounded-lg animate-pulse'>
-            <p className='text-xs text-destructive'>
-              Nenhum produto encontrado
-            </p>
-          </div>
-        )}
+        <Suspense>
+          {filteredProducts?.length === 0 && (
+            <div className='flex w-full h-[200px] justify-center items-center border border-destructive rounded-lg animate-pulse'>
+              <p className='text-xs text-destructive'>
+                Nenhum produto encontrado
+              </p>
+            </div>
+          )}
+        </Suspense>
       </div>
     </main>
   )
