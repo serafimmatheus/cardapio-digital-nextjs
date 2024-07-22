@@ -24,7 +24,6 @@ const schemaEditProduct = z.object({
   price: z.string(),
   image: z.string().nullish(),
   isActive: z.boolean().default(true),
-  // categories: z.array(z.string()),
   categories: z.array(z.string()).refine((name) => name.some((item) => item)),
 })
 
@@ -174,14 +173,14 @@ export function FormEditProducts({ slug }: { slug: string }) {
 
           <CardFooter className='py-4 px-0 gap-2 justify-end'>
             <Button
-              disabled={isPending}
+              disabled={isFetchingProducts}
               onClick={handleBackPage}
               variant='outline'
               type='button'
             >
               Cancelar
             </Button>
-            <Button type='submit' disabled={isPending}>
+            <Button type='submit' disabled={isFetchingProducts}>
               Editar produto
             </Button>
           </CardFooter>

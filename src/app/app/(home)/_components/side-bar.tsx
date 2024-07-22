@@ -6,7 +6,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { LogOut, Network, PackageOpen, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import nookies from 'nookies'
 
 function SideBarApp() {
   const pathName = usePathname()

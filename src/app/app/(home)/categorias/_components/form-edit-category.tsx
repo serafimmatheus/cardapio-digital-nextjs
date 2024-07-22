@@ -12,7 +12,6 @@ import { z } from 'zod'
 import { editCategories } from '../_actions/edit-category'
 import { Switch } from '@/app/_components/ui/switch'
 import { useRouter } from 'next/navigation'
-import { getCategoriesBySlug } from '../_actions/get-category-by-slug'
 import { getCategories } from '../_actions/get-categories'
 
 const schemaEditCategory = z.object({

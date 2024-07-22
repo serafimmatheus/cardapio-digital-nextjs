@@ -13,7 +13,6 @@ import { z } from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { useToast } from '@/app/_components/ui/use-toast'
 import { Button } from '@/app/_components/ui/button'
 
 import { Search } from 'lucide-react'
@@ -43,7 +42,6 @@ export function SelectCategory() {
     [searchParams]
   )
 
-  const { toast } = useToast()
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
   })
