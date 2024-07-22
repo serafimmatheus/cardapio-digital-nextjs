@@ -14,12 +14,10 @@ import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button } from '@/app/_components/ui/button'
-import { Suspense } from 'react'
 import { Search } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { getCategories } from '@/app/app/(home)/categorias/_actions/get-categories'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useCallback } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   category: z.string(),
@@ -29,18 +27,17 @@ type FormSchema = z.infer<typeof formSchema>
 
 export function SelectCategory() {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const router = useRouter()
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString())
-      params.set(name, value)
+  // const createQueryString = useCallback(
+  //   (name: string, value: string) => {
+  //     const params = new URLSearchParams(searchParams.toString())
+  //     params.set(name, value)
 
-      return params.toString()
-    },
-    [searchParams]
-  )
+  //     return params.toString()
+  //   },
+  //   [searchParams]
+  // )
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -60,9 +57,9 @@ export function SelectCategory() {
       return router.push(`${pathname.toString()}`)
     }
 
-    return router.push(
-      `${pathname.toString()}?${createQueryString('category', data.category)}`
-    )
+    // return router.push(
+    //   `${pathname.toString()}?${createQueryString('category', data.category)}`
+    // )
   }
   return (
     <form
@@ -72,18 +69,19 @@ export function SelectCategory() {
       {isFetchingCategories ? (
         <p>Carregando...</p>
       ) : (
-        <Suspense>
+        <>
           <Controller
             control={form.control}
             name='category'
             render={({ field }) => (
               <Select
                 onValueChange={field.onChange}
-                defaultValue={
-                  searchParams.get('category')
-                    ? searchParams.get('category')!
-                    : field.value
-                }
+                // defaultValue={
+                //   searchParams.get('category')
+                //     ? searchParams.get('category')!
+                //     : field.value
+                // }
+                defaultValue={field.value}
               >
                 <SelectTrigger className='w-[180px]'>
                   <SelectValue placeholder='Categoria' />
@@ -106,7 +104,7 @@ export function SelectCategory() {
           <Button size='icon' type='submit'>
             <Search />
           </Button>
-        </Suspense>
+        </>
       )}
 
       {isErrorCategories && <p>Erro ao carregar categorias</p>}

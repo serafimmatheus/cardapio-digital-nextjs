@@ -7,12 +7,8 @@ import { Suspense } from 'react'
 import { SelectCategory } from './_components/select-category'
 import { getAllProducts } from './action'
 import { useQuery } from '@tanstack/react-query'
-import { useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
 
 export default function Home() {
-  const searchParams = useSearchParams()
-  const category = searchParams.get('category')
   const {
     data: products,
     isError,
@@ -22,15 +18,15 @@ export default function Home() {
     queryFn: getAllProducts,
   })
 
-  const filteredProducts = products?.filter((product) => {
-    if (!category) return product
+  // const filteredProducts = products?.filter((product) => {
+  //   if (!category) return product
 
-    return product.categories
-      .map((category) => category.slug)
-      .includes(category)
-  })
+  //   return product.categories
+  //     .map((category) => category.slug)
+  //     .includes(category)
+  // })
 
-  useEffect(() => {}, [category])
+  // useEffect(() => {}, [category])
 
   return (
     <main className='pb-20'>
@@ -90,7 +86,7 @@ export default function Home() {
                     className='bg-[#F3F2F2] animate-pulse h-[280px] flex flex-col justify-between min-h-full p-5 rounded-tl-lg rounded-br-lg rounded-tr-3xl rounded-bl-3xl'
                   />
                 ))
-              : filteredProducts?.map((product) => (
+              : products?.map((product) => (
                   <CardProducts product={product} key={product.id} />
                 ))}
           </div>
@@ -105,7 +101,7 @@ export default function Home() {
         )}
 
         <Suspense>
-          {filteredProducts?.length === 0 && (
+          {products?.length === 0 && (
             <div className='flex w-full h-[200px] justify-center items-center border border-destructive rounded-lg animate-pulse'>
               <p className='text-xs text-destructive'>
                 Nenhum produto encontrado
