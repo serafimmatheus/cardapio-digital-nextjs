@@ -10,7 +10,7 @@ if (cookies) {
 }
 
 export const api = axios.create({
-  baseURL: 'https://api-cardapio-digital-nestjs.onrender.com/api/v1/',
+  baseURL: process.env.NEXT_PUBLIC_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
