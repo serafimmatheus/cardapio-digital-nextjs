@@ -14,7 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <main className='grid grid-cols-2 px-5 py-10 gap-10 h-[calc(100vh-74px)]'>
-      <div className='flex flex-col border border-border rounded-xl p-8'>
+      <div className='hidden lg:flex flex-col border border-border rounded-xl p-8'>
         <div className='flex-1 flex flex-col'>
           <Link href={'/'} className='hover:underline self-start'>
             <h1 className='flex items-center gap-1'>
