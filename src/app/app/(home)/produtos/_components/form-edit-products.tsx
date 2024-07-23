@@ -8,7 +8,7 @@ import { Switch } from '@/app/_components/ui/switch'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { QueryClient, useMutation, useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { getCategories } from '../../categorias/_actions/get-categories'
 import { Checkbox } from '@/app/_components/ui/checkbox'
@@ -17,13 +17,14 @@ import { editProducts } from '../_actions/edit_products'
 import { useToast } from '@/app/_components/ui/use-toast'
 import { getAllProducts } from '@/app/(home)/action'
 import { uploadImageProducts } from '../_actions/uploadProducts'
+import Image from 'next/image'
 
 const schemaEditProduct = z.object({
   name: z.string(),
   slug: z.string(),
   description: z.string().nullish(),
   price: z.string(),
-  image: z.string().nullish(),
+  image: z.any().optional(),
   isActive: z.boolean().default(true),
   categories: z.array(z.string()).refine((name) => name.some((item) => item)),
 })
@@ -40,7 +41,7 @@ export function FormEditProducts({ slug }: { slug: string }) {
     queryFn: getCategories,
   })
 
-  const { data: productsData, isFetching: isFetchingProducts } = useQuery({
+  const { data: productsData } = useQuery({
     queryKey: ['products'],
     queryFn: getAllProducts,
   })
@@ -49,13 +50,13 @@ export function FormEditProducts({ slug }: { slug: string }) {
     mutationFn: editProducts,
     onError: (error) => {
       toast({
-        title: 'Erro ao criar produto',
+        title: 'Erro ao editar o produto',
         description: error.message,
       })
     },
     onSuccess: () => {
       toast({
-        title: 'Produto criado com sucesso',
+        title: 'Produto editado com sucesso',
         description: 'success',
       })
       router.push('/app/produtos')
@@ -75,17 +76,25 @@ export function FormEditProducts({ slug }: { slug: string }) {
       slug: filteredProduct?.slug,
       description: filteredProduct?.description,
       price: filteredProduct?.price,
-      image: filteredProduct?.image,
       categories: filteredProduct?.categories.map((item) => item.slug),
     },
+  })
+
+  const {
+    fields: imageFields,
+    append: appendImage,
+    remove: removeImage,
+  } = useFieldArray({
+    control: form.control,
+    name: 'image',
   })
 
   async function handleEditProduct(data: EditProduct) {
     const formData = new FormData()
     formData.append('slug', data.slug)
+    data.image && formData.append('image', data.image[0]!)
 
-    if (data.image) {
-      data.image && formData.append('image', data.image[0])
+    if (data.image instanceof FileList) {
       const response = await uploadImageProducts(formData)
 
       await editProductsFn({
@@ -94,7 +103,17 @@ export function FormEditProducts({ slug }: { slug: string }) {
       })
     }
 
-    await editProductsFn({ product: data, slug })
+    await editProductsFn({
+      product: {
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        isActive: data.isActive,
+        categories: data.categories,
+        slug: data.slug,
+      },
+      slug,
+    })
   }
 
   function handleBackPage() {
@@ -124,21 +143,66 @@ export function FormEditProducts({ slug }: { slug: string }) {
             <div className='space-y-1'>
               <Label>Nome</Label>
               <Input {...form.register('name')} />
+              {form.formState.errors?.name && (
+                <p className='text-red-500 text-sm'>
+                  {form.formState.errors?.name.message}
+                </p>
+              )}
             </div>
 
             <div className='space-y-1'>
               <Label>Slug</Label>
               <Input {...form.register('slug')} />
+              {
+                <p className='text-red-500 text-sm'>
+                  {form.formState.errors?.slug?.message}
+                </p>
+              }
             </div>
 
             <div className='space-y-1'>
               <Label>Descrição</Label>
               <Input {...form.register('description')} />
+              {
+                <p className='text-red-500 text-sm'>
+                  {form.formState.errors?.description?.message}
+                </p>
+              }
             </div>
 
             <div className='space-y-1'>
               <Label>Image URL</Label>
-              <Input type='file' {...form.register('image')} />
+              <div className='relative'>
+                <Image
+                  src={filteredProduct?.image!}
+                  width={0}
+                  height={0}
+                  sizes='100vw'
+                  alt='Product Image'
+                  className='size-20'
+                />
+              </div>
+              {imageFields.map((field, index) => (
+                <div key={field.id} className='flex flex-row items-center'>
+                  <Input {...form.register('image')} type='file' />
+                  <Button
+                    variant='outline'
+                    onClick={() => removeImage(index)}
+                    type='button'
+                  >
+                    Remover
+                  </Button>
+                </div>
+              ))}
+              {imageFields.length < 1 && (
+                <Button
+                  onClick={() => appendImage({})}
+                  variant='outline'
+                  type='button'
+                >
+                  Atualizar imagem
+                </Button>
+              )}
             </div>
 
             <div className='space-y-1'>
@@ -154,7 +218,6 @@ export function FormEditProducts({ slug }: { slug: string }) {
                   control={form.control}
                   name='categories'
                   render={({ field }) => {
-                    console.log(field)
                     return (
                       <div
                         key={item.id}
@@ -187,14 +250,14 @@ export function FormEditProducts({ slug }: { slug: string }) {
 
           <CardFooter className='py-4 px-0 gap-2 justify-end'>
             <Button
-              disabled={isFetchingProducts}
+              disabled={isPending}
               onClick={handleBackPage}
               variant='outline'
               type='button'
             >
               Cancelar
             </Button>
-            <Button type='submit' disabled={isFetchingProducts}>
+            <Button type='submit' disabled={isPending}>
               Editar produto
             </Button>
           </CardFooter>
