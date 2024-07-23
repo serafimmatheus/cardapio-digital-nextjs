@@ -138,7 +138,7 @@ export function FormEditProducts({ slug }: { slug: string }) {
 
             <div className='space-y-1'>
               <Label>Image URL</Label>
-              <Input {...form.register('image')} />
+              <Input type='file' {...form.register('image')} />
             </div>
 
             <div className='space-y-1'>
