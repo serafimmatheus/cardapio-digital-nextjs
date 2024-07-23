@@ -16,6 +16,7 @@ import { Checkbox } from '@/app/_components/ui/checkbox'
 import { editProducts } from '../_actions/edit_products'
 import { useToast } from '@/app/_components/ui/use-toast'
 import { getAllProducts } from '@/app/(home)/action'
+import { uploadImageProducts } from '../_actions/uploadProducts'
 
 const schemaEditProduct = z.object({
   name: z.string(),
@@ -80,6 +81,19 @@ export function FormEditProducts({ slug }: { slug: string }) {
   })
 
   async function handleEditProduct(data: EditProduct) {
+    const formData = new FormData()
+    formData.append('slug', data.slug)
+
+    if (data.image) {
+      data.image && formData.append('image', data.image[0])
+      const response = await uploadImageProducts(formData)
+
+      await editProductsFn({
+        product: { ...data, image: response.image },
+        slug,
+      })
+    }
+
     await editProductsFn({ product: data, slug })
   }
 
