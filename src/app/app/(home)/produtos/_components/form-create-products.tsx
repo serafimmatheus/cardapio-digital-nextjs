@@ -15,18 +15,19 @@ import { Checkbox } from '@/app/_components/ui/checkbox'
 
 import { createProducts } from '../_actions/create_products'
 import { useToast } from '@/app/_components/ui/use-toast'
+import { uploadImageProducts } from '../_actions/uploadProducts'
 
 const schemaCreateProduct = z.object({
   name: z.string(),
   slug: z.string(),
   description: z.string().nullish(),
   price: z.coerce.number(),
-  image: z.string().nullish(),
+  image: z.any(),
   isActive: z.boolean().default(true),
   categories: z.array(z.string()).refine((name) => name.some((item) => item)),
 })
 
-type CreateProduct = z.infer<typeof schemaCreateProduct>
+export type CreateProduct = z.infer<typeof schemaCreateProduct>
 
 export function FormCreateProducts() {
   const router = useRouter()
@@ -67,9 +68,23 @@ export function FormCreateProducts() {
   })
 
   async function handleCreateProduct(data: CreateProduct) {
-    console.log(data)
+    const formData = new FormData()
+    formData.append('slug', data.slug)
+    formData.append('image', data.image[0])
 
-    await createProductsFn({ product: data })
+    const response = await uploadImageProducts(formData)
+
+    await createProductsFn({
+      product: {
+        name: data.name,
+        slug: data.slug,
+        description: data.description,
+        price: data.price,
+        image: response.image,
+        isActive: data.isActive,
+        categories: data.categories,
+      },
+    })
   }
 
   function handleBackPage() {
@@ -113,7 +128,7 @@ export function FormCreateProducts() {
 
             <div className='space-y-1'>
               <Label>Image URL</Label>
-              <Input {...form.register('image')} />
+              <Input type='file' {...form.register('image')} />
             </div>
 
             <div className='space-y-1'>
@@ -129,7 +144,6 @@ export function FormCreateProducts() {
                   control={form.control}
                   name='categories'
                   render={({ field }) => {
-                    console.log(field)
                     return (
                       <div
                         key={item.id}
